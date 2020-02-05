@@ -27,18 +27,6 @@ use Bitnix\Log\Flogger\Packer,
 final class FluentdPacker implements Packer {
 
     /**
-     * @var int
-     */
-    private int $flags;
-
-    /**
-     * @param int $flags
-     */
-    public function __construct(int $flags = Json::FLAGS) {
-        $this->flags = $flags;
-    }
-
-    /**
      * @param Record $record
      * @return string
      * @throws \Throwable
@@ -52,7 +40,7 @@ final class FluentdPacker implements Packer {
                 'context' => $record->context(),
                 'payload' => $record->payload()
             ]
-        ], $this->flags);
+        ]);
     }
 
     /**
