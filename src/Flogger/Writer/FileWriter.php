@@ -60,6 +60,7 @@ final class FileWriter implements Writer {
 
     /**
      * @param Record $record
+     * @throws RuntimeException
      */
     public function write(Record $record) : void {
         $entry = $this->packer->pack($record) . \PHP_EOL;
