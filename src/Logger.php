@@ -26,6 +26,6 @@ interface Logger {
      * @param string $tag
      * @param array $data
      */
-    public function log(string $tag, array $data) : void;
+    public function post(string $tag, array $data) : void;
 
 }
