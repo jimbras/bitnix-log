@@ -21,7 +21,7 @@ use RuntimeException,
     Bitnix\Log\Flogger\Packer,
     Bitnix\Log\Flogger\Record,
     Bitnix\Log\Flogger\Writer,
-    Bitnix\Log\Flogger\Packer\LinePacker;
+    Bitnix\Log\Flogger\Packer\JsonPacker;
 
 /**
  * @version 0.1.0
@@ -55,7 +55,7 @@ final class FileWriter implements Writer {
         }
 
         $this->file = $file;
-        $this->packer = $packer ?: new LinePacker();
+        $this->packer = $packer ?: new JsonPacker();
     }
 
     /**
