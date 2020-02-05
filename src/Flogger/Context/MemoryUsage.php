@@ -17,31 +17,33 @@
 
 namespace Bitnix\Log\Flogger\Context;
 
-use PHPUnit\Framework\TestCase;
+use JsonSerializable;
 
 /**
  * @version 0.1.0
  */
-class ElapsedTimeTest extends TestCase {
+final class MemoryUsage implements JsonSerializable {
 
-    public function testConstructorAssignsDecimalsCorrectly() {
-        $elapsed = new ElapsedTime();
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{3}$~', $value));
+    use ByteFormatter;
 
-        $elapsed = new ElapsedTime(5);
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{5}$~', $value));
+    /**
+     * @return string
+     */
+    public function value() : string {
+        return $this->jsonSerialize();
     }
 
-    public function testJsonSupport() {
-        $this->assertIsString(
-            \json_decode(\json_encode(new ElapsedTime()))
-        );
+    /**
+     * @return string
+     */
+    public function jsonSerialize() : string {
+        return $this->formatBytes(\memory_get_usage());
     }
 
-    public function testToString() {
-        $this->assertIsString((string) new ElapsedTime());
+    /**
+     * @return string
+     */
+    public function __toString() : string {
+        return self::CLASS;
     }
-
 }

@@ -17,31 +17,31 @@
 
 namespace Bitnix\Log\Flogger\Context;
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * @version 0.1.0
  */
-class ElapsedTimeTest extends TestCase {
+trait ByteFormatter {
 
-    public function testConstructorAssignsDecimalsCorrectly() {
-        $elapsed = new ElapsedTime();
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{3}$~', $value));
+    private array $thresholds = [
+        ' GB' => 1073741824,    // 1024 * 1024 *1024
+        ' MB' => 1048576,       // 1024 * 1024
+        ' KB' => 1024
+    ];
 
-        $elapsed = new ElapsedTime(5);
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{5}$~', $value));
+    private string $bytes = ' B';
+
+    /**
+     * @param int $bytes
+     * @return string
+     */
+    private function formatBytes(int $bytes) : string {
+        $bytes = \max(0, $bytes);
+        foreach ($this->thresholds as $suffix => $value) {
+            if ($bytes >= $value) {
+                return round($bytes / $value, 3) . $suffix;
+            }
+        }
+
+        return $bytes . $this->bytes;
     }
-
-    public function testJsonSupport() {
-        $this->assertIsString(
-            \json_decode(\json_encode(new ElapsedTime()))
-        );
-    }
-
-    public function testToString() {
-        $this->assertIsString((string) new ElapsedTime());
-    }
-
 }

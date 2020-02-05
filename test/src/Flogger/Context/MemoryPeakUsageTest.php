@@ -22,26 +22,21 @@ use PHPUnit\Framework\TestCase;
 /**
  * @version 0.1.0
  */
-class ElapsedTimeTest extends TestCase {
+class MemoryPeakUsageTest extends TestCase {
 
-    public function testConstructorAssignsDecimalsCorrectly() {
-        $elapsed = new ElapsedTime();
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{3}$~', $value));
-
-        $elapsed = new ElapsedTime(5);
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{5}$~', $value));
+    public function testValue() {
+        $memory = new MemoryPeakUsage();
+        $this->assertTrue(1 === \preg_match('~^\d+(\.\d+) GB|MB|KB|B$~', $memory->value()));
     }
 
     public function testJsonSupport() {
-        $this->assertIsString(
-            \json_decode(\json_encode(new ElapsedTime()))
-        );
+        $memory = new MemoryPeakUsage();
+        $export = $memory->jsonSerialize();
+        $this->assertEquals($export, \json_decode(\json_encode($export)));
     }
 
     public function testToString() {
-        $this->assertIsString((string) new ElapsedTime());
+        $this->assertIsString((string) new MemoryPeakUsage());
     }
 
 }

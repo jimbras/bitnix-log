@@ -22,26 +22,14 @@ use PHPUnit\Framework\TestCase;
 /**
  * @version 0.1.0
  */
-class ElapsedTimeTest extends TestCase {
+class ByteFormatterTest extends TestCase {
 
-    public function testConstructorAssignsDecimalsCorrectly() {
-        $elapsed = new ElapsedTime();
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{3}$~', $value));
+    use ByteFormatter;
 
-        $elapsed = new ElapsedTime(5);
-        $value = $elapsed->value();
-        $this->assertTrue((bool) \preg_match('~\.\d{5}$~', $value));
+    public function testFormat() {
+        $this->assertStringContainsString(' GB', $this->formatBytes(1073741825));
+        $this->assertStringContainsString(' MB', $this->formatBytes(1048576));
+        $this->assertStringContainsString(' KB', $this->formatBytes(1024));
+        $this->assertStringContainsString(' B', $this->formatBytes(512));
     }
-
-    public function testJsonSupport() {
-        $this->assertIsString(
-            \json_decode(\json_encode(new ElapsedTime()))
-        );
-    }
-
-    public function testToString() {
-        $this->assertIsString((string) new ElapsedTime());
-    }
-
 }

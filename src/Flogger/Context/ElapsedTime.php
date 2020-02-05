@@ -43,17 +43,17 @@ final class ElapsedTime implements JsonSerializable {
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function value() : float {
+    public function value() : string {
         return $this->jsonSerialize();
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function jsonSerialize() : float {
-        return (float) \number_format(\microtime(true) - $this->start, $this->decimals);
+    public function jsonSerialize() : string {
+        return \number_format(\microtime(true) - $this->start, $this->decimals);
     }
 
     /**
