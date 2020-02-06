@@ -136,28 +136,14 @@ final class StreamWriter implements Writer {
     }
 
     /**
-     * @return resource
-     * @throws RuntimeException
-     */
-    private function stream() {
-        if (\is_resource($this->stream)) {
-            return $this->stream;
-        }
-
-        throw new RuntimeException(\sprintf(
-            'Stream "%s" is closed', $this->uri
-        ));
-    }
-
-    /**
      * @param Record $record
      * @throws RuntimeException
      */
     public function write(Record $record) : void {
-        if (false === \fwrite($this->stream(), $this->packer->pack($record) . \PHP_EOL)) {
+        if (false === \fwrite($this->stream, $this->packer->pack($record) . \PHP_EOL)) {
             $this->close();
             throw new RuntimeException(\sprintf(
-                'Failed to write log to stream "%s": %s',
+                'Failed to write log record to stream "%s": %s',
                     $this->uri,
                     \error_get_last()['message'] ?? 'unknown error'
             ));

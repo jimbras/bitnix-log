@@ -167,7 +167,7 @@ class StreamWriterTest extends TestCase {
 
         $packer = $this->createMock(Packer::CLASS);
         $packer
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('pack')
             ->with($record)
             ->will($this->returnValue('logged!!!'));
@@ -176,7 +176,7 @@ class StreamWriterTest extends TestCase {
         try {
             $writer->write($record);
             \fclose($fp);
-            $writer->write($record);
+            @$writer->write($record);
             $this->fail('RuntimeException not thrown');
         } finally {
             @\unlink($file);
