@@ -144,10 +144,41 @@ class StreamWriterTest extends TestCase {
         $writer = new StreamWriter($fp, $packer);
         try {
             @$writer->write($record);
-            $this->assertTrue(\is_file($file));
-            $this->assertEquals('logged!!!', \trim(\file_get_contents($file)));
         } finally {
             @\fclose($fp);
+            @\unlink($file);
+        }
+    }
+
+    public function testWriteErrorOnClosedStream() {
+        $this->expectException(RuntimeException::CLASS);
+
+        $file = __DIR__ . '/_logs/error.log';
+        $this->assertFalse(\is_file($file));
+
+        $fp = \fopen($file, 'ab');
+
+        $record = new Record(
+            new Timestamp(new DateTimeZone('UTC')),
+            'foo',
+            'bar',
+            ['zig' => 'zag']
+        );
+
+        $packer = $this->createMock(Packer::CLASS);
+        $packer
+            ->expects($this->once())
+            ->method('pack')
+            ->with($record)
+            ->will($this->returnValue('logged!!!'));
+
+        $writer = new StreamWriter($fp, $packer);
+        try {
+            $writer->write($record);
+            \fclose($fp);
+            $writer->write($record);
+            $this->fail('RuntimeException not thrown');
+        } finally {
             @\unlink($file);
         }
     }

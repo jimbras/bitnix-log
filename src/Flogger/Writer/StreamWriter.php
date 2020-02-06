@@ -56,12 +56,18 @@ final class StreamWriter implements Writer {
      * @throws RuntimeException
      */
     public function __construct($stream, Packer $packer = null) {
-        $this->stream($stream);
+        $this->init($stream);
         $this->packer = $packer ?: new JsonPacker();
     }
 
     public function __destruct() {
-        if ($this->close && \is_resource($this->stream)) {
+        if ($this->close) {
+            $this->close();
+        }
+    }
+
+    private function close() : void {
+        if (\is_resource($this->stream)) {
             \fclose($this->stream);
         }
         $this->stream = null;
@@ -73,7 +79,7 @@ final class StreamWriter implements Writer {
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function stream($stream) : void {
+    private function init($stream) : void {
         if (\is_string($stream)) {
 
             $this->mkdir($stream);
@@ -130,15 +136,30 @@ final class StreamWriter implements Writer {
     }
 
     /**
+     * @return resource
+     * @throws RuntimeException
+     */
+    private function stream() {
+        if (\is_resource($this->stream)) {
+            return $this->stream;
+        }
+
+        throw new RuntimeException(\sprintf(
+            'Stream "%s" is closed', $this->uri
+        ));
+    }
+
+    /**
      * @param Record $record
      * @throws RuntimeException
      */
     public function write(Record $record) : void {
-        if (false === \fwrite($this->stream, $this->packer->pack($record) . \PHP_EOL)) {
+        if (false === \fwrite($this->stream(), $this->packer->pack($record) . \PHP_EOL)) {
+            $this->close();
             throw new RuntimeException(\sprintf(
                 'Failed to write log to stream "%s": %s',
                     $this->uri,
-                    \error_get_last()['message'] ?? ''
+                    \error_get_last()['message'] ?? 'unknown error'
             ));
         }
     }
