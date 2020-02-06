@@ -167,7 +167,7 @@ class StreamWriterTest extends TestCase {
 
         $packer = $this->createMock(Packer::CLASS);
         $packer
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('pack')
             ->with($record)
             ->will($this->returnValue('logged!!!'));
