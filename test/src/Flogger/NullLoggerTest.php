@@ -15,17 +15,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-namespace Bitnix\Log;
+namespace Bitnix\Log\Flogger;
+
+use PHPUnit\Framework\TestCase;
 
 /**
  * @version 0.1.0
  */
-interface Logger {
+class NullLoggerTest extends TestCase {
 
-    /**
-     * @param string $tag
-     * @param array $payload
-     */
-    public function post(string $tag, array $payload) : void;
-
+    public function testToString() {
+        $this->assertIsString((string) new NullLogger());
+    }
 }

@@ -15,17 +15,26 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-namespace Bitnix\Log;
+namespace Bitnix\Log\Flogger;
+
+use Bitnix\Log\Logger;
 
 /**
  * @version 0.1.0
  */
-interface Logger {
+final class NullLogger implements Logger {
 
     /**
      * @param string $tag
      * @param array $payload
+     * @codeCoverageIgnore
      */
-    public function post(string $tag, array $payload) : void;
+    public function post(string $tag, array $payload) : void {}
 
+    /**
+     * @return string
+     */
+    public function __toString() : string {
+        return self::CLASS;
+    }
 }
