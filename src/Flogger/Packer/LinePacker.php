@@ -70,7 +70,6 @@ final class LinePacker implements Packer {
         $align = $matches[4];
 
         foreach ($tags as $index => $value) {
-            //$parser = 'parse' . \ucfirst($value);
             $this->handlers[] = $this->$value(\trim($data[$index]));
             $this->update($found[$index], \trim($align[$index]));
         }
