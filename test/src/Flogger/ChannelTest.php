@@ -46,6 +46,27 @@ class ChannelTest extends TestCase {
         }
     }
 
+    public function testLog() {
+        $record = null;
+        $this->writer
+            ->expects($this->once())
+            ->method('write')
+            ->will($this->returnCallback(function($log) use (&$record) {
+                $record = $log;
+            }));
+
+        $this->context
+            ->expects($this->once())
+            ->method('map')
+            ->will($this->returnValue([]));
+
+        $channel = $this->channel();
+        $channel->log('alert', 'foo = {foo}', ['foo' => 'bar', 'zig' => 'zag']);
+        $this->assertInstanceOf(Record::CLASS, $record);
+        $this->assertEquals('alert', $record->tag());
+        $this->assertEquals(['zig' => 'zag', 'message' => 'foo = bar'], $record->payload());
+    }
+
     public function testWrite() {
         $record = null;
         $this->writer

@@ -17,12 +17,21 @@
 
 namespace Bitnix\Log\Flogger;
 
-use Bitnix\Log\Logger;
+use Bitnix\Log\Logger,
+    Psr\Log\AbstractLogger;
 
 /**
  * @version 0.1.0
  */
-final class NullLogger implements Logger {
+final class NullLogger extends AbstractLogger implements Logger {
+
+    /**
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @codeCoverageIgnore
+     */
+    public function log($level, $message, array $context = []) {}
 
     /**
      * @param string $tag

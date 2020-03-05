@@ -21,12 +21,13 @@ use DateTimeZone,
     Throwable,
     Bitnix\Log\Logger,
     Bitnix\Log\Flogger\Util\Error,
-    Bitnix\Log\Flogger\Util\Json;
+    Bitnix\Log\Flogger\Util\Json,
+    Psr\Log\AbstractLogger;
 
 /**
  * @version 0.1.0
  */
-final class Channel implements Logger {
+final class Channel extends AbstractLogger implements Logger {
 
     /**
      * @var DateTimeZone
@@ -86,6 +87,51 @@ final class Channel implements Logger {
                 'error'   => new Error($x)
             ])
         ));
+    }
+
+    /**
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @codeCoverageIgnore
+     */
+    public function log($level, $message, array $context = []) {
+        $tag = (string) $level;
+
+        if (!$this->filter || $this->filter->accept($tag)) {
+
+            $record = $this->record($tag, $this->context($message, $context));
+
+            try {
+                $this->writer->write($record);
+            } catch (Throwable $x) {
+                ($this->onerror)($record, $x);
+            }
+        }
+    }
+
+    /**
+     * @param string $message
+     * @param array $context
+     * @return array
+     */
+    private function context(string $message, array $context) : array {
+        if (false !== \strpos($message, '{')) {
+            $replace = [];
+
+            foreach ($context as $key => $value) {
+                $tag = '{' . $key . '}';
+                if (false !== \strpos($message, $tag)) {
+                    $replace[$tag] = \trim(Json::encode($value), '"');
+                    unset($context[$key]);
+                }
+            }
+
+            $message = \strtr($message, $replace);
+        }
+
+        $context['message'] = $message;
+        return $context;
     }
 
     /**
